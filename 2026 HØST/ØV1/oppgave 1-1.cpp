@@ -19,7 +19,7 @@ int main() {
         std::cout << static_cast<int>(change) << " "; // Cast to int for better readability
     }
     std::cout << "\n\n";
-
+    
     // Find the maximum profit possible with a single buy and sell operation
     Subarray result = maxSubarray(kursforandringer);
 
