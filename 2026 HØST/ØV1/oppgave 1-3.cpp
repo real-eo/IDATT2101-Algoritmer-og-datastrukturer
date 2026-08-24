@@ -1,8 +1,10 @@
 //   Author: Elias Alexander Wiklund Ottersbo
 // Standard: C++23
 //    Build: UCRT GCC
-#include <chrono>
+#include "algoritme.hpp"
+#include <iostream>
 #include <iomanip>
+#include <chrono>
 
 
 int main() {
@@ -14,7 +16,7 @@ int main() {
     for (signed char c : testData) std::cout << static_cast<int>(c) << " ";
     std::cout << "\n";
     
-    Subarray testResult = oppgave1(testData);
+    Subarray testResult = maxSubarray(testData);
     std::cout << "Beste kjop (start-indeks): " << testResult.start << "\n";
     std::cout << "Beste salg (slutt-indeks): " << testResult.end << "\n\n";
 
@@ -35,7 +37,7 @@ int main() {
         auto startKlokke = std::chrono::high_resolution_clock::now();
 
         // Kjor algoritmen (lagre resultatet i en variabel så kompilatoren ikke sletter koden)
-        volatile Subarray result = oppgave1(kursforandringer);
+        volatile Subarray result = maxSubarray(kursforandringer);
 
         // Stopp klokken
         auto stoppKlokke = std::chrono::high_resolution_clock::now();
