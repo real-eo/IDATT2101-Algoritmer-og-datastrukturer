@@ -13,7 +13,7 @@ int main() {
     std::cout << std::left << std::setw(14) << "Size (n)" << "Runtime (ms)\n";
     std::cout << "---------------------------\n";
 
-    // Test: n = 10M, 20M, 40M, 80M to see scaling clearly
+    // Test: n = 10M, 20M, 40M, and 80M to see scaling clearly
     std::vector<std::size_t> sizes = {10'000'000, 20'000'000, 40'000'000, 80'000'000};
     std::vector<signed char> kursforandringer;
 
