@@ -50,9 +50,9 @@ Siden algoritmen er lineær, bør målingene omtrent følge dette mønsteret:
 | Problemstørrelse | Forventet kjøretid |
 |---:|---:|
 | 10 000 000 | $t$ |
-| 20 000 000 | omtrent $2t$ |
-| 40 000 000 | omtrent $4t$ |
-| 80 000 000 | omtrent $8t$ |
+| 20 000 000 | ~$2t$ |
+| 40 000 000 | ~$4t$ |
+| 80 000 000 | ~$8t$ |
 
 Målingene vil ikke nødvendigvis bli helt nøyaktige på grunn av prosessbelastning, minnehastighet, og unøyaktigheter i systemklokken. Likevel bør kjøretiden øke omtrent proporsjonalt med `n`. Dersom dette observeres i `oppgave 1-3.cpp`, bekrefter det den teoretiske analysen om at algoritmen har tidskompleksitet $O(n)$.
 
