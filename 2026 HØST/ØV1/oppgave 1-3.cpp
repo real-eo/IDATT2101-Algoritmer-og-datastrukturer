@@ -24,7 +24,7 @@ int main() {
         // Start the clock
         auto startKlokke = std::chrono::high_resolution_clock::now();
 
-        // NOTE: We save the result to a volatile variable to prevent the compiler from removing the function call as an optimization 
+        // NOTE: We save the result to a volatile variable to prevent the compiler from removing the function call during optimization 
         volatile Subarray result = maxSubarray(kursforandringer);
 
         // Stop the clock
