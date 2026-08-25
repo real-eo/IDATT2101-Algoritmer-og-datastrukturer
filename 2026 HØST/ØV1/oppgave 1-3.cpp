@@ -22,19 +22,22 @@ int main() {
         generateData(kursforandringer, n);
 
         // Start the clock
-        auto startKlokke = std::chrono::high_resolution_clock::now();
+        auto startTime = std::chrono::high_resolution_clock::now();
 
         // NOTE: We save the result to a volatile variable to prevent the compiler from removing the function call during optimization 
         volatile Subarray result = maxSubarray(kursforandringer);
 
         // Stop the clock
-        auto stoppKlokke = std::chrono::high_resolution_clock::now();
+        auto stopTime = std::chrono::high_resolution_clock::now();
         
         // Calculate duration in milliseconds
-        auto varighet = std::chrono::duration_cast<std::chrono::milliseconds>(stoppKlokke - startKlokke).count();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stopTime - startTime).count();
+        std::cout << std::left << std::setw(14) << n << duration << " ms\n";
 
-        std::cout << std::left << std::setw(14) << n << varighet << " ms\n";
+        // Use result to avoid `-Wunused-but-set-variable` warning during compilation
+        (void)result;
     }
+    
 
     return 0;
 }
