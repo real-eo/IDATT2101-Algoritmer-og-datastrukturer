@@ -10,7 +10,7 @@ int main() {
     std::vector<signed char> kursforandringer;                                          // ? Named in Norwegian as "kursforandringer" is one word
 
     // Populate the vector with stock price changes
-    generateData(kursforandringer, 100);                                                // Generate 100 random stock price changes
+    generateData(kursforandringer, 10);                                                // Generate 100 random stock price changes
 
     // | DEBUG:
     // Output the generated stock price changes

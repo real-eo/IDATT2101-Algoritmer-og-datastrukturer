@@ -6,6 +6,7 @@
 #include <random>
 
 
+// NOTE: I intentionally use `signed char` instead of `int` to fit 4x more data incase of VERY large n values
 // Generate random stock price changes and populate the provided vector
 void generateData(std::vector<signed char>& containerReference,  std::size_t count) {
     // Initialize the random number generator                                           // ? Mark static to avoid reinitialization each function call

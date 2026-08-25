@@ -8,44 +8,32 @@
 
 
 int main() {
-    // 1. Verifikasjonstest (Liten n for å sjekke logikk)
-    std::vector<signed char> testData;
-    generateData(testData, 10);
-    
-    std::cout << "--- VERIFIKASJONSTEST ---\nData: ";
-    for (signed char c : testData) std::cout << static_cast<int>(c) << " ";
-    std::cout << "\n";
-    
-    Subarray testResult = maxSubarray(testData);
-    std::cout << "Beste kjop (start-indeks): " << testResult.start << "\n";
-    std::cout << "Beste salg (slutt-indeks): " << testResult.end << "\n\n";
+    // Benchmark with different problem sizes 
+    std::cout << "---------------------------\n";
+    std::cout << std::left << std::setw(14) << "Size (n)" << "Runtime (ms)\n";
+    std::cout << "---------------------------\n";
 
-    // 2. YTELSESTEST / TIDSMÅLING (Flere ulike n)
-    std::cout << "--- YTELSESTEST (Tidsmaling) ---\n";
-    std::cout << std::left << std::setw(15) << "Problemstr. (n)" << "Kjoretid (ms)\n";
-    std::cout << "---------------------------------\n";
-
-    // Vi tester n = 10M, 20M, 40M, 80M for å se skaleringen tydelig
-    std::vector<std::size_t> storrelser = {10'000'000, 20'000'000, 40'000'000, 80'000'000};
+    // Test: n = 10M, 20M, 40M, 80M to see scaling clearly
+    std::vector<std::size_t> sizes = {10'000'000, 20'000'000, 40'000'000, 80'000'000};
     std::vector<signed char> kursforandringer;
 
-    for (std::size_t n : storrelser) {
-        // Generer data UTENFOR tidsmålingen (siden math.random/RNG er tregt)
+    for (std::size_t n : sizes) {
+        // Generate data before timing to avoid contaminating the measurements
         generateData(kursforandringer, n);
 
-        // Start klokken
+        // Start the clock
         auto startKlokke = std::chrono::high_resolution_clock::now();
 
-        // Kjor algoritmen (lagre resultatet i en variabel så kompilatoren ikke sletter koden)
+        // NOTE: We save the result to a volatile variable to prevent the compiler from removing the function call as an optimization 
         volatile Subarray result = maxSubarray(kursforandringer);
 
-        // Stopp klokken
+        // Stop the clock
         auto stoppKlokke = std::chrono::high_resolution_clock::now();
         
-        // Beregn varighet i millisekunder
+        // Calculate duration in milliseconds
         auto varighet = std::chrono::duration_cast<std::chrono::milliseconds>(stoppKlokke - startKlokke).count();
 
-        std::cout << std::left << std::setw(15) << n << varighet << " ms\n";
+        std::cout << std::left << std::setw(14) << n << varighet << " ms\n";
     }
 
     return 0;
