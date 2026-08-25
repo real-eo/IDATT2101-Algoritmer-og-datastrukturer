@@ -12,7 +12,6 @@ int main() {
     // Populate the vector with stock price changes
     generateData(kursforandringer, 10);                                                // Generate 100 random stock price changes
 
-    // | DEBUG:
     // Output the generated stock price changes
     std::cout << "Generated stock price changes:\n";
     for (signed char change : kursforandringer) {
