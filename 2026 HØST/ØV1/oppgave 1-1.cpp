@@ -10,12 +10,12 @@ int main() {
     std::vector<signed char> kursforandringer;                                          // ? Named in Norwegian as "kursforandringer" is one word
 
     // Populate the vector with stock price changes
-    generateData(kursforandringer, 10);                                                // Generate 100 random stock price changes
+    generateData(kursforandringer, 10);                                                 // Generate 100 random stock price changes
 
     // Output the generated stock price changes
     std::cout << "Generated stock price changes:\n";
     for (signed char change : kursforandringer) {
-        std::cout << static_cast<int>(change) << " "; // Cast to int for better readability
+        std::cout << static_cast<int>(change) << " ";                                   // Cast to int for better readability
     }
     std::cout << "\n\n";
     
