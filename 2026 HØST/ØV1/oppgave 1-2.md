@@ -1,4 +1,5 @@
-## Oppgave 1-2: Analyse av algoritmen
+# Oppgave 1-2
+## Analyse av algoritmen
 
 Programmet finner den beste perioden for ett kjøp og ett salg ved å finne den maksimale deltabellen i arrayet med kursendringer. Hver verdi representerer hvor mye aksjekursen endrer seg fra én dag til den neste.
 
