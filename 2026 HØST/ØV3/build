@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# @REM alternativ 2:
+if g++ -std=c++23 -Wall -Wextra -pedantic "alternativ 2.cpp" -o alternativ2; then
+    echo "Success: alternativ 2 compiled."
+else 
+    echo "Error: Compilation failed for alternativ 2."
+fi
