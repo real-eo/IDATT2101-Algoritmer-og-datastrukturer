@@ -21,12 +21,12 @@ constexpr double pow(double base, int exponent) {
     }
 
     // If exponent is even:  
-    else if (exponent % 2 == 0) {                                                       // ? Mark as likely to be true for optimization
+    else if (exponent % 2 == 0) {                                                       
         return pow(base * base, exponent >> 1);                                         // ? Use bitwise right shift to divide exponent by 2
     } 
     
     // If exponent is odd:
-    else {                                                                              // ? Mark as likely to be true for optimization
+    else {                                                                              
         return (base * pow(base*base, (exponent - 1) >> 1));                            // ? Use bitwise right shift to divide exponent by 2
     }
 }

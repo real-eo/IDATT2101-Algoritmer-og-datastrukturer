@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 
-# @REM Metode 1:
-if g++ -std=c++23 -Wall -Wextra -pedantic "metode1.cpp" -o metode1; then
-    echo "Success: Metode 1 compiled."
-else 
-    echo "Error: Compilation failed for Metode 1."
-fi
-echo ""
-
-
-# @REM Metode 2:
-if g++ -std=c++23 -Wall -Wextra -pedantic "metode2.cpp" -o metode2; then
-    echo "Success: Metode 2 compiled."
-else 
-    echo "Error: Compilation failed for Metode 2."
-fi
-
-
-# # @REM Metode 3:
-# if g++ -std=c++23 -Wall -Wextra -pedantic "metode3.cpp" -o metode3; then
-#     echo "Success: Metode 3 compiled."
+# # @REM Metode 1:
+# if g++ -std=c++23 -Wall -Wextra -pedantic "metode1.cpp" -o metode1; then
+#     echo "Success: Metode 1 compiled."
 # else 
-#     echo "Error: Compilation failed for Metode 3."
+#     echo "Error: Compilation failed for Metode 1."
 # fi
+# echo ""
+
+
+# # @REM Metode 2:
+# if g++ -std=c++23 -Wall -Wextra -pedantic "metode2.cpp" -o metode2; then
+#     echo "Success: Metode 2 compiled."
+# else 
+#     echo "Error: Compilation failed for Metode 2."
+# fi
+
+
+# @REM Eksponenter:
+if g++ -std=c++23 -Wall -Wextra -pedantic "eksponenter.cpp" -o eksponenter; then
+    echo "Success: Eksponenter compiled."
+else 
+    echo "Error: Compilation failed for Eksponenter."
+fi
