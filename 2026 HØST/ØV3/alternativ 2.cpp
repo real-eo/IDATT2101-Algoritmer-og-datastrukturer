@@ -11,6 +11,7 @@
 #include <limits>
 #include <chrono>
 #include <format>
+#include <cmath>
 
 
 // * Sorting function
@@ -115,11 +116,82 @@ void benchmarkDivisor(
                  && Test::checksum(data, expectedSum);                                  
 
     // Print the results in a formatted manner
-    std::cout << std::format("divisor {:>4}: {:>10.1f} ms  {}",
+    std::cout << std::format("divisor {:>4}: {:>10.1f} ms  {}\n",
         divisor,
         std::chrono::duration<double, std::milli>(END_TIME - START_TIME).count(),
         ok ? "OK" : "FAILED"
     );
+}
+
+
+// * Complexity measurement
+// Times shellSort on datasets of increasing sizes and estimates the exponent x in O(n^x).
+void measureComplexity(const std::vector<int>& source, const double divisor) {
+    std::cout << "\nComplexity measurement (divisor " << divisor << "):\n";
+    std::cout << std::format("{:>12} {:>12} {:>8}\n", "Size (n)", "Time (ms)", "x est.");
+
+    // Doubling sizes: pairwise estimates x = log2(T2/T1) are most meaningful when n doubles between measurements
+    const std::vector<std::size_t> SIZES = {
+        1'000'000, 2'000'000, 4'000'000, 8'000'000, 16'000'000, 32'000'000
+    };
+
+    double previousTime = 0.0;
+    
+    // Collect log-log points for the least-squares fit
+    std::vector<std::pair<double, double>> logPoints;
+    
+
+    for (const std::size_t size : SIZES) {
+        // Copy only the first 'size' elements from the source
+        std::vector<int> data(source.begin(), source.begin() + static_cast<std::ptrdiff_t>(size));
+
+        // Store the sum of the vector before sorting to verify correctness
+        const uint64_t EXPECTED_SUM = sum(data);
+
+        // Measure the time taken
+        const auto START_TIME = std::chrono::steady_clock::now();
+        shellSort(data, divisor);
+        const auto END_TIME = std::chrono::steady_clock::now();
+
+        // Validate the correctness of the sorting
+        if (!(Test::sequence(data) && Test::checksum(data, EXPECTED_SUM))) [[unlikely]] {
+            std::cerr << "Sorting failed for size " << size << ".\n";
+            return;
+        }
+
+        const double MS = std::chrono::duration<double, std::milli>(END_TIME - START_TIME).count();
+
+        // Pairwise estimate: x = log2(T2/T1) when n doubles
+        double estimate = 0.0;
+        if (previousTime > 0.0) {
+            estimate = std::log2(MS / previousTime);                                    // Size doubled -> log2(n2/n1) = 1
+        }
+
+        std::cout << std::format("{:>12} {:>12.1f} {:>8.3f}\n",
+            size, 
+            MS, 
+            estimate
+        );
+
+        logPoints.emplace_back(std::log(static_cast<double>(size)), std::log(MS));
+
+        previousTime = MS;
+    }
+
+    // Least-squares fit in log-log space: log(T) = log(c) + x * log(n)
+    const std::size_t K = logPoints.size();
+
+    double sumX = 0.0, sumY = 0.0, sumXY = 0.0, sumX2 = 0.0;
+    for (const auto& [x, y] : logPoints) {                                              // ? Use normal sequential iteration here since
+        sumX  += x;                                                                     // ? the number of points is small and the overhead 
+        sumY  += y;                                                                     // ? of parallel execution would outweigh the benefits.
+        sumXY += x * y;                                                                 // ? We also use loop fusing here to minimize the
+        sumX2 += x * x;                                                                 // ? number of iterations and improve cache locality.
+    }
+
+    const double slope = (K * sumXY - sumX * sumY) / (K * sumX2 - sumX * sumX);
+
+    std::cout << std::format("\nEstimated complexity: O(n^{:.2f})\n", slope);
 }
 
 
@@ -136,9 +208,12 @@ int main() {
 
     // Benchmark the Shell sort algorithm with different divisors, and print the results
     std::cout << "Benchmarking Shell sort with different divisors:\n";
-    for (const double divisor : {1.3, 1.5, 1.7, 2.0, 2.2, 2.5, 3.0}) {
+    for (const double divisor : {1.3, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.5, 3.0}) {
         benchmarkDivisor(data, divisor, EXPECTED_SUM);
     }
+
+    // Measure the complexity of the best variant found (divisor 1.7)
+    measureComplexity(data, 1.7);
     
     return 0;
 }
