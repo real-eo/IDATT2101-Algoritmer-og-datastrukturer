@@ -66,17 +66,17 @@ private:
     
     // Prepend a digit, used for LSD-first result construction.
     // ? Prepending makes each new digit the head, so the finished list is MSD-first with O(1) work per digit.
-    void prependDigit(signed char d) {
-        head = std::unique_ptr<Node>(new Node{
-            .next = std::move(head),
-            .previous = nullptr,
-            .digit = d
-        });
-
-        // Update the previous pointer of the new head's next node, if it exists
-        if (head->next) [[likely]]      head->next->previous = head.get();  
-        else            [[unlikely]]    tail = head.get();                      
-    }
+    void prependDigit(signed char d) {                                                  
+        head = std::unique_ptr<Node>(new Node{                                          // ? The Node doesn't get automatically destructed by the unique_ptr dtor
+            .next = std::move(head),                                                    // ? here even though it goes out of scope, this is because ownership of                                 
+            .previous = nullptr,                                                        // ? the pointer is transferred to the next node, which is still in scope.                             
+            .digit = d                                                                  // ? The previous pointer lacks ownership as the preceeding node always should outlive it                
+        });                                                                             
+                                                                                        // ? This is a dangling pointer, but it's safe to use here because the nextNode     
+        // Update the previous pointer of the new head's next node, if it exists        // ? unique_ptr owns the memory and will keep it alive until the next iteration                                                                
+        if (head->next) [[likely]]      head->next->previous = head.get();              // ? of the loop, at which point ownership is transferred to the next node.                                                                     
+        else            [[unlikely]]    tail = head.get();                              // If a node doesn't have a successor, it must be the most significant digit                                                                                
+    }                                                                               
 
 
     // Add magnitudes, |a| + |b|, digit by digit from the LSD ends
@@ -322,23 +322,9 @@ BigInt::BigInt(std::string_view number) {
             throw std::invalid_argument("Invalid character in number string");
         }
 
-        // Convert char to signed char
-        const auto digit = static_cast<signed char>(c - '0');
-        
-        // Create a new node and link it to it's successor node                         // ? The Node doesn't get automatically destructed by the unique_ptr dtor
-        nextNode = std::unique_ptr<Node>(new Node{                                      // ? here even though it goes out of scope, this is because ownership of 
-            .next = std::move(nextNode),                                                // ? the pointer is transferred to the next node, which is still in scope. 
-            .previous = nullptr,                                                        // ? The previous pointer lacks ownership as the preceeding node always should outlive it
-            .digit = digit  
-        }); 
-                                                                                        // ? This is a dangling pointer, but it's safe to use here because the nextNode 
-        // Point the future node's next pointer to the current previous pointer         // ? unique_ptr owns the memory and will keep it alive until the next iteration 
-        if (nextNode->next) [[likely]]      nextNode->next->previous = nextNode.get();  // ? of the loop, at which point ownership is transferred to the next node.
-        else                [[unlikely]]    tail = nextNode.get();                      // If a node doesn't have a successor, it must be the most significant digit
+        // Add the digit to the front of the linked list, making it the new head
+        prependDigit(static_cast<signed char>(c - '0'));
     }                                                                                   
-
-    // Store the head of the linked list    
-    head = std::move(nextNode);                                                         // ? nextNode here is seen from the perspective of the node before the head
 }
 
 BigInt::BigInt(const BigInt& other) : isNegative(other.isNegative) {
