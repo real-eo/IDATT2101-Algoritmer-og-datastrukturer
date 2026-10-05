@@ -74,8 +74,8 @@ private:
         });
 
         // Update the previous pointer of the new head's next node, if it exists
-        if (head->next) head->next->previous = head.get();
-        else            tail = head.get();
+        if (head->next) [[likely]]      head->next->previous = head.get();  
+        else            [[unlikely]]    tail = head.get();                      
     }
 
 
@@ -295,8 +295,7 @@ BigInt::BigInt(std::string_view number) {
 
 
     // Initialize the next node after the tail (which is none)                      
-    std::unique_ptr<Node> nextNode = nullptr;                                       
-    Node* previousNode = nullptr;                                                   
+    std::unique_ptr<Node> nextNode = nullptr;                                                                                       
     
     // Create a new node for each digit in the number
     // ? NOTES:                                                                
@@ -329,15 +328,13 @@ BigInt::BigInt(std::string_view number) {
         // Create a new node and link it to it's successor node                         // ? The Node doesn't get automatically destructed by the unique_ptr dtor
         nextNode = std::unique_ptr<Node>(new Node{                                      // ? here even though it goes out of scope, this is because ownership of 
             .next = std::move(nextNode),                                                // ? the pointer is transferred to the next node, which is still in scope. 
-            .previous = previousNode,                                                   // ? The previous pointer lacks ownership as the preceeding node always should outlive it
+            .previous = nullptr,                                                        // ? The previous pointer lacks ownership as the preceeding node always should outlive it
             .digit = digit  
         }); 
                                                                                         // ? This is a dangling pointer, but it's safe to use here because the nextNode 
-        // Update the previous node pointer to the current node                         // ? unique_ptr owns the memory and will keep it alive until the next iteration 
-        previousNode = nextNode.get();                                                  // ? of the loop, at which point ownership is transferred to the next node.
-
-        // Set the tail pointer to the least significant digit node 
-        if (!tail) tail = previousNode;                                                 // The least significant digit is the first node created
+        // Point the future node's next pointer to the current previous pointer         // ? unique_ptr owns the memory and will keep it alive until the next iteration 
+        if (nextNode->next) [[likely]]      nextNode->next->previous = nextNode.get();  // ? of the loop, at which point ownership is transferred to the next node.
+        else                [[unlikely]]    tail = nextNode.get();                      // If a node doesn't have a successor, it must be the most significant digit
     }                                                                                   
 
     // Store the head of the linked list    
