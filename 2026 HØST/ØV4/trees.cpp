@@ -144,6 +144,18 @@ namespace {
             std::ranges::fill(taken | std::views::drop(origin) | std::views::take(word.size()), slotState::occupied);
         }
 
+        void stampChecked(std::size_t origin, std::string_view word) {
+            const std::size_t width = strideOfCanvas;
+            const std::size_t offset = (width - word.size()) / 2;
+            if (origin + offset + word.size() > width) {
+                std::cerr << "stamp out of range: origin=" << origin << " width=" << width
+                          << " word=" << word << '\n';
+                return;
+            }
+            std::ranges::copy(word, glyphs.begin() + static_cast<std::ptrdiff_t>(origin + offset));
+            std::ranges::fill(taken | std::views::drop(origin) | std::views::take(word.size()), slotState::occupied);
+        }
+
         std::size_t strideOfCanvas = 0;
     };
 
@@ -178,9 +190,9 @@ namespace {
             }
 
             const std::string_view word(current->key);
-            canvases[depth].stamp(origin, word);
+            canvases[depth].stampChecked(origin, word);
 
-            const std::size_t half = slotWidth(depth) / 2;
+            const std::size_t half = slotWidth(depth + 1) / 2;
             if (auto* l = descend(current, false)) {
                 pending.push_back(frame{ l, origin, static_cast<std::uint8_t>(depth + 1) });
             }
@@ -210,12 +222,17 @@ namespace {
     template <class... Ts>
     overloaded(Ts...) -> overloaded<Ts...>;
 
-    [[nodiscard]] bool readTokens(std::vector<std::string>& sink) {
+    template <nodePayload K>
+    void interactiveSession(binarySearchTree<K>& tree) {
         std::string token;
-        while (std::cin >> token) {
-            sink.push_back(std::move(token));
+        for (;;) {
+            std::cout << "ord> " << std::flush;
+            if (!(std::cin >> token)) {
+                std::cout << '\n';
+                break;
+            }
+            (void)tree.insert(token);
         }
-        return !sink.empty();
     }
 
 } // namespace
@@ -232,13 +249,11 @@ int main(int argc, char* argv[]) {
     }
 
     if (tree.empty()) {
-        std::vector<std::string> tokens;
-        if (!readTokens(tokens)) {
-            return EXIT_SUCCESS;
-        }
-        for (std::string& word : tokens) {
-            (void)tree.insert(word);
-        }
+        interactiveSession(tree);
+    }
+
+    if (tree.empty()) {
+        return EXIT_SUCCESS;
     }
 
     render(paintLevels(tree.rootNode()));
