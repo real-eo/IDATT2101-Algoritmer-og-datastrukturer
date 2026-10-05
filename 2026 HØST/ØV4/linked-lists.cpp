@@ -354,41 +354,52 @@ BigInt::BigInt(const BigInt& other) : isNegative(other.isNegative) {
 int main() {
     using namespace std::string_view_literals;
 
-    // Get a number from the user
-    std::cout << "Enter a number: "sv;
-    std::string input;
-    std::cin >> input;
+    // Get two numbers from the user
+    std::cout << " Enter first number: "sv;
+    std::string input1;
+    std::cin >> input1;
 
-    // Create a BigInt object from the input
-    BigInt inputInt(input);
-    std::cout << "inputInt: "sv << inputInt << "\n"sv;
+    std::cout << "Enter second number: "sv;
+    std::string input2;
+    std::cin >> input2;
+
+    // Create BigInt objects from the inputs
+    BigInt inputInt1(input1);
+    BigInt inputInt2(input2);
+    
+    std::cout << "inputInt1: "sv << inputInt1 << "\n"sv;
+    std::cout << "inputInt2: "sv << inputInt2 << "\n"sv;
 
     // Test all scenarios with a 20+ digit number
     BigInt intB("12345678901234567890"sv);
     BigInt intC("-98765432109876543210"sv);
 
-    std::cout << "    intB: "sv << intB << "\n"sv;
-    std::cout << "    intC: "sv << intC << "\n"sv;
+    std::cout << "     intB: "sv << intB << "\n"sv;
+    std::cout << "     intC: "sv << intC << "\n"sv;
 
     std::cout << "\n"sv << "Addtition:"sv << "\n"sv;
-    std::cout << "(inputInt + intB) Sum: "sv << inputInt + intB << "\n"sv;
-    std::cout << "(inputInt + intC) Sum: "sv << inputInt + intC << "\n"sv;
-    std::cout << "(intB + inputInt) Sum: "sv << intB + inputInt << "\n"sv;
-    std::cout << "(intC + inputInt) Sum: "sv << intC + inputInt << "\n"sv;
-    std::cout << "    (intB + intB) Sum: "sv << intB + intB << "\n"sv;
-    std::cout << "    (intB + intC) Sum: "sv << intB + intC << "\n"sv;
-    std::cout << "    (intC + intB) Sum: "sv << intC + intB << "\n"sv;
-    std::cout << "    (intC + intC) Sum: "sv << intC + intC << "\n"sv;
+    std::cout << "(inputInt1 + inputInt2) Sum: "sv << inputInt1 + inputInt2 << "\n"sv;
+    std::cout << "(inputInt2 + inputInt1) Sum: "sv << inputInt1 + inputInt2 << "\n"sv;
+    std::cout << "     (inputInt1 + intB) Sum: "sv << inputInt1 + intB << "\n"sv;
+    std::cout << "     (inputInt1 + intC) Sum: "sv << inputInt1 + intC << "\n"sv;
+    std::cout << "     (intB + inputInt1) Sum: "sv << intB + inputInt1 << "\n"sv;
+    std::cout << "     (intC + inputInt1) Sum: "sv << intC + inputInt1 << "\n"sv;
+    std::cout << "          (intB + intB) Sum: "sv << intB + intB << "\n"sv;
+    std::cout << "          (intB + intC) Sum: "sv << intB + intC << "\n"sv;
+    std::cout << "          (intC + intB) Sum: "sv << intC + intB << "\n"sv;
+    std::cout << "          (intC + intC) Sum: "sv << intC + intC << "\n"sv;
 
     std::cout << "\n"sv << "Subtraction:"sv << "\n"sv;
-    std::cout << "(inputInt - intB) Difference: "sv << inputInt - intB << "\n"sv;
-    std::cout << "(inputInt - intC) Difference: "sv << inputInt - intC << "\n"sv;
-    std::cout << "(intB - inputInt) Difference: "sv << intB - inputInt << "\n"sv;
-    std::cout << "(intC - inputInt) Difference: "sv << intC - inputInt << "\n"sv;
-    std::cout << "    (intB - intB) Difference: "sv << intB - intB << "\n"sv;
-    std::cout << "    (intB - intC) Difference: "sv << intB - intC << "\n"sv;
-    std::cout << "    (intC - intB) Difference: "sv << intC - intB << "\n"sv;
-    std::cout << "    (intC - intC) Difference: "sv << intC - intC << "\n"sv;
+    std::cout << "(inputInt1 - inputInt2) Difference: "sv << inputInt1 - inputInt2 << "\n"sv;
+    std::cout << "(inputInt2 - inputInt1) Difference: "sv << inputInt2 - inputInt1 << "\n"sv;
+    std::cout << "     (inputInt1 - intB) Difference: "sv << inputInt1 - intB << "\n"sv;
+    std::cout << "     (inputInt1 - intC) Difference: "sv << inputInt1 - intC << "\n"sv;
+    std::cout << "     (intB - inputInt1) Difference: "sv << intB - inputInt1 << "\n"sv;
+    std::cout << "     (intC - inputInt1) Difference: "sv << intC - inputInt1 << "\n"sv;
+    std::cout << "          (intB - intB) Difference: "sv << intB - intB << "\n"sv;
+    std::cout << "          (intB - intC) Difference: "sv << intB - intC << "\n"sv;
+    std::cout << "          (intC - intB) Difference: "sv << intC - intB << "\n"sv;
+    std::cout << "          (intC - intC) Difference: "sv << intC - intC << "\n"sv;
 
     return 0;
 }
