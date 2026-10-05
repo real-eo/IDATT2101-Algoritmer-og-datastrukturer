@@ -1,28 +1,25 @@
 //   Author: Elias Alexander Wiklund Ottersbo
 // Standard: C++23
 //    Build: UCRT GCC
-//
-// Deloppgave 2 — binary search tree of words, printed level-by-level with
-// fixed per-level character budgets (64/32/16/8), words centered in their slot.
-
+#include <type_traits>
+#include <string_view>
 #include <algorithm>
-#include <array>
-#include <bit>
-#include <charconv>
-#include <concepts>
-#include <cstdint>
-#include <cstdlib>
 #include <iostream>
 #include <iterator>
+#include <charconv>
+#include <concepts>
+#include <cstdlib>
+#include <cstdint>
+#include <utility>
 #include <memory>
 #include <ranges>
-#include <span>
 #include <string>
-#include <string_view>
-#include <tuple>
-#include <type_traits>
-#include <utility>
 #include <vector>
+#include <array>
+#include <tuple>
+#include <span>
+#include <bit>
+
 
 namespace {
 
@@ -149,7 +146,7 @@ namespace {
             const std::size_t offset = (width - word.size()) / 2;
             if (origin + offset + word.size() > width) {
                 std::cerr << "stamp out of range: origin=" << origin << " width=" << width
-                          << " word=" << word << '\n';
+                        << " word=" << word << '\n';
                 return;
             }
             std::ranges::copy(word, glyphs.begin() + static_cast<std::ptrdiff_t>(origin + offset));
