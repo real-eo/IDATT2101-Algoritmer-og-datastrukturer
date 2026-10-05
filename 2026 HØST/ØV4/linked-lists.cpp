@@ -232,6 +232,7 @@ public:
         // If the number is negative, print the negative sign
         if (bigInt.isNegative)  os << "-"sv;
 
+
         // Print the digits in linked list order - MSD to LSD
         Node* current = bigInt.head.get();
         while (current) {
@@ -244,7 +245,6 @@ public:
 
     // Arithmetic addtion operator overload for adding two BigInt objects
     [[nodiscard]] friend BigInt operator+(const BigInt& a, const BigInt& b) {
-
         if (a.isNegative == b.isNegative) {
             return addMagnitudes(a, b, a.isNegative);
         }
@@ -256,9 +256,9 @@ public:
         switch (result) {
             case ComparisonResult::GREATER: return subtractMagnitudes(a, b, a.isNegative);
             case ComparisonResult::LESS:    return subtractMagnitudes(b, a, b.isNegative);
-            default:                        return BigInt(nullptr, false);              // ? Serves to supress warning/UB about no return after the
-        }                                                                               // ? switch statement, and in cases where: x + (-x) = 0
-    }
+            default:                        return BigInt(nullptr, false);              // ! Serves to supress warning/UB about no return after the switch
+        }                                                                               // ! statement, and in cases where: x + (-x) = 0; - in which it
+    }                                                                                   // ! constructs the canonical zero (empty list, positive sign)
 
     // Arithmetic subtraction operator overload for subtracting two BigInt objects
     [[nodiscard]] friend BigInt operator-(const BigInt& a, const BigInt& b) {
@@ -275,7 +275,7 @@ BigInt::BigInt(std::string_view number) {
     using namespace std::string_view_literals;
 
     // Ensure the string is not empty
-    if (number.empty() || number == "-"sv) {
+    if (number.empty() || number == "-"sv) [[unlikely]] {
         throw std::invalid_argument("Invalid number string");
     }
 
@@ -289,6 +289,10 @@ BigInt::BigInt(std::string_view number) {
     while (number.starts_with("0"sv) && number.size() > 1) {                            // ? While number starts with "0" and has more than one digit left
         number.remove_prefix(1);
     }
+
+    // Normalize negative zero: a zero magnitude is never negative
+    if (number == "0"sv) [[unlikely]]   isNegative = false;
+
 
     // Initialize the next node after the tail (which is none)                      
     std::unique_ptr<Node> nextNode = nullptr;                                       
@@ -373,9 +377,35 @@ int main() {
     std::cin >> input;
 
     // Create a BigInt object from the input
-    BigInt bigInt(input);
-    std::cout << "You entered: "sv << bigInt << "\n"sv;
-    
+    BigInt inputInt(input);
+    std::cout << "inputInt: "sv << inputInt << "\n"sv;
 
+    // Test all scenarios with a 20+ digit number
+    BigInt intB("12345678901234567890"sv);
+    BigInt intC("-98765432109876543210"sv);
 
+    std::cout << "    intB: "sv << intB << "\n"sv;
+    std::cout << "    intC: "sv << intC << "\n"sv;
+
+    std::cout << "\n"sv << "Addtition:"sv << "\n"sv;
+    std::cout << "(inputInt + intB) Sum: "sv << inputInt + intB << "\n"sv;
+    std::cout << "(inputInt + intC) Sum: "sv << inputInt + intC << "\n"sv;
+    std::cout << "(intB + inputInt) Sum: "sv << intB + inputInt << "\n"sv;
+    std::cout << "(intC + inputInt) Sum: "sv << intC + inputInt << "\n"sv;
+    std::cout << "    (intB + intB) Sum: "sv << intB + intB << "\n"sv;
+    std::cout << "    (intB + intC) Sum: "sv << intB + intC << "\n"sv;
+    std::cout << "    (intC + intB) Sum: "sv << intC + intB << "\n"sv;
+    std::cout << "    (intC + intC) Sum: "sv << intC + intC << "\n"sv;
+
+    std::cout << "\n"sv << "Subtraction:"sv << "\n"sv;
+    std::cout << "(inputInt - intB) Difference: "sv << inputInt - intB << "\n"sv;
+    std::cout << "(inputInt - intC) Difference: "sv << inputInt - intC << "\n"sv;
+    std::cout << "(intB - inputInt) Difference: "sv << intB - inputInt << "\n"sv;
+    std::cout << "(intC - inputInt) Difference: "sv << intC - inputInt << "\n"sv;
+    std::cout << "    (intB - intB) Difference: "sv << intB - intB << "\n"sv;
+    std::cout << "    (intB - intC) Difference: "sv << intB - intC << "\n"sv;
+    std::cout << "    (intC - intB) Difference: "sv << intC - intB << "\n"sv;
+    std::cout << "    (intC - intC) Difference: "sv << intC - intC << "\n"sv;
+
+    return 0;
 }
