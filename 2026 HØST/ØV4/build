@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# * @REM Deloppgave 1  
+# @REM linked-lists:
+if g++ -std=c++23 -O2 -Wall -Wextra -pedantic "linked-lists.cpp" -o linked-lists; then
+    echo "Success: linked-lists compiled."
+else 
+    echo "Error: Compilation failed for linked-lists."
+fi
+
+
+# * @REM Deloppgave 2
+# @REM trees:
+if g++ -std=c++23 -O2 -Wall -Wextra -pedantic "trees.cpp" -o trees; then
+    echo "Success: trees compiled."
+else 
+    echo "Error: Compilation failed for trees."
+fi
