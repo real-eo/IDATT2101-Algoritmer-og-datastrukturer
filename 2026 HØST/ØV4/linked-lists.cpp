@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <ranges>
 #include <string>
 
 
@@ -21,6 +22,7 @@ struct Node {
         while (current) {
             Node* next = current->next.release();                                       // detach first, so no recursion
             delete current;                                                             // ~Node runs, sees null next, returns
+            
             current = next;
         }
     }
@@ -34,7 +36,7 @@ private:
 
 public:
     // * Ctor & dtor
-    explicit BigInt(std::string number);
+    explicit BigInt(std::string_view number);
     ~BigInt();
 
     // * Overloads
@@ -56,7 +58,9 @@ public:
     }
 
     // Arithmetic addtion operator overload for adding two BigInt objects
-    [[nodiscard]] friend BigInt operator+(const BigInt& a, const BigInt& b);
+    [[nodiscard]] friend BigInt operator+(const BigInt& a, const BigInt& b) {
+        
+    }
 
     // Arithmetic subtraction operator overload for subtracting two BigInt objects
     [[nodiscard]] friend BigInt operator-(const BigInt& a, const BigInt& b);
@@ -64,7 +68,7 @@ public:
 
 
 // * Implementations
-BigInt::BigInt(std::string number) {
+BigInt::BigInt(std::string_view number) {
     using namespace std::string_view_literals;
 
     // Ensure the string is not empty
@@ -75,24 +79,33 @@ BigInt::BigInt(std::string number) {
     // Check if the number is negative
     isNegative = number.starts_with("-"sv);
 
-    // Skip the negative sign if it exists
-    if (isNegative) number = number.substr(1);
+    // Skip the negative sign, if it exists, by moving the string_view pointer forward 
+    if (isNegative) number.remove_prefix(1);
+
+    // Initialize the next node after the tail (which is none)                      
+    std::unique_ptr<Node> nextNode = nullptr;                                       
+    Node* previousNode = nullptr;                                                   
     
-    // Reverse the string                                                           // ? We reverse the string, and construct the linked list from the end, because
-    std::reverse(number.begin(), number.end());                                     // ? we need to store the head as a member within the BigInt object for the linked 
-                                                                                    // ? list to be of any use. This is only true for the first node (the head), and 
-    // Initialize the next node after the tail (which is none)                      // ? because of this, allows us to simply disregard the pointer the last node after
-    std::unique_ptr<Node> nextNode = nullptr;                                       // ? it's assigned to its predecessor. Therefore, we want to make the retreival of
-    Node* previousNode = nullptr;                                                   // ? the head as simple as possible, which is why we simply construct the linked 
-                                                                                    // ? list in reverse order, so the final value of nextNode is the head of the linked    
-    // Create a new node for each digit in the number                               // ? list. We also would have to do digit assignment once outside of the loop, which                                                
-    // ? Since the previous node is a raw pointer, it allows us to                  // ? is reeaaally bad practice, as it spreads similar logic to different places.
-    // ? utilize dangling pointers to circumvent the issue of requiring             
-    // ? either two O(n) loops, or look up the previous node each 
-    // ? time we add a new node. Avoiding having to traverse the entire  
-    // ? list to find the previous node each time we add a new node 
-    // ? makes the ctor go from O(n^2) to O(n) in time complexity. 
-    for (char c : number) {
+    // Create a new node for each digit in the number
+    // ? NOTES:                                                                
+    // ?    Since the previous node is a raw pointer, it allows us to                  
+    // ?    utilize dangling pointers to circumvent the issue of requiring             
+    // ?    either two O(n) loops, or look up the previous node each 
+    // ?    time we add a new node. Avoiding having to traverse the entire  
+    // ?    list to find the previous node each time we add a new node 
+    // ?    makes the ctor go from O(n^2) to O(n) in time complexity. 
+    // ?
+    // ?    We reverse the string, and construct the linked list from the end, because
+    // ?    we need to store the head as a member within the BigInt object for the linked 
+    // ?    list to be of any use. This is only true for the first node (the head), and 
+    // ?    because of this, allows us to simply disregard the pointer the last node after
+    // ?    it's assigned to its predecessor. Therefore, we want to make the retreival of
+    // ?    the head as simple as possible, which is why we simply construct the linked 
+    // ?    list in reverse order, so the final value of nextNode is the head of the linked   
+    // ?    list. We also would have to do digit assignment once outside of the loop, which   
+    // ?    is reeaaally bad practice, as it spreads similar logic to different places. 
+    // ?           
+    for (char c : std::views::reverse(number)) {                                    // views::reverse reads backwards; the underlying, possibly read-only, data is never modified
         // Check if the digit is valid                                              
         if (c < '0' || c > '9') {
             throw std::invalid_argument("Invalid character in number string");
@@ -102,7 +115,7 @@ BigInt::BigInt(std::string number) {
         const auto digit = static_cast<signed char>(c - '0');
         
         // Create a new node and link it to it's successor node                     // ? The Node doesn't get automatically destructed by the unique_ptr dtor
-        nextNode = std::make_unique<Node>(Node{                                     // ? here even though it goes out of scope, this is because ownership of 
+        nextNode = std::unique_ptr<Node>(new Node{                                  // ? here even though it goes out of scope, this is because ownership of 
             .next = std::move(nextNode),                                            // ? the pointer is transferred to the next node, which is still in scope. 
             .previous = previousNode,                                               // ? The previous pointer lacks ownership as the preceeding node always should outlive it
             .digit = digit
@@ -134,10 +147,17 @@ BigInt::~BigInt() = default;
 
 
 int main() {
+    using namespace std::string_view_literals;
+
     // Get a number from the user
-    std::cout << "Enter a number: ";
+    std::cout << "Enter a number: "sv;
     std::string input;
     std::cin >> input;
+
+    // Create a BigInt object from the input
+    BigInt bigInt(input);
+    std::cout << "You entered: "sv << bigInt << "\n"sv;
+    
 
 
 }
