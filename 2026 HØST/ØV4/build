@@ -8,8 +8,6 @@ else
     echo "Error: Compilation failed for linked-lists."
 fi
 
-exit 0
-
 # * @REM Deloppgave 2
 # @REM trees:
 if g++ -std=c++23 -O2 -Wall -Wextra -pedantic "trees.cpp" -o trees; then
