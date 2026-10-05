@@ -15,3 +15,10 @@ if g++ -std=c++23 -O2 -Wall -Wextra -pedantic "trees.cpp" -o trees; then
 else 
     echo "Error: Compilation failed for trees."
 fi
+
+# @REM trees2:
+if g++ -std=c++23 -O2 -Wall -Wextra -pedantic "trees2.cpp" -o trees2; then
+    echo "Success: trees2 compiled."
+else 
+    echo "Error: Compilation failed for trees2."
+fi

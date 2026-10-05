@@ -141,16 +141,15 @@ namespace {
             std::ranges::fill(taken | std::views::drop(origin) | std::views::take(word.size()), slotState::occupied);
         }
 
-        void stampChecked(std::size_t origin, std::string_view word) {
-            const std::size_t width = strideOfCanvas;
-            const std::size_t offset = (width - word.size()) / 2;
-            if (origin + offset + word.size() > width) {
-                std::cerr << "stamp out of range: origin=" << origin << " width=" << width
+        void stampChecked(std::size_t origin, std::size_t slot, std::string_view word) {
+            if (origin + slot > strideOfCanvas) {
+                std::cerr << "stamp out of range: origin=" << origin << " width=" << strideOfCanvas
                         << " word=" << word << '\n';
                 return;
             }
+            const std::size_t offset = (slot >= word.size()) ? (slot - word.size()) / 2 : 0;
             std::ranges::copy(word, glyphs.begin() + static_cast<std::ptrdiff_t>(origin + offset));
-            std::ranges::fill(taken | std::views::drop(origin) | std::views::take(word.size()), slotState::occupied);
+            std::ranges::fill(taken | std::views::drop(origin) | std::views::take(slot), slotState::occupied);
         }
 
         std::size_t strideOfCanvas = 0;
@@ -187,14 +186,15 @@ namespace {
             }
 
             const std::string_view word(current->key);
-            canvases[depth].stampChecked(origin, word);
+            const std::size_t slot = slotWidth(depth);
+            canvases[depth].stampChecked(origin, slot, word);
 
-            const std::size_t half = slotWidth(depth + 1) / 2;
+            const std::size_t childSlot = slot / 2;
             if (auto* l = descend(current, false)) {
                 pending.push_back(frame{ l, origin, static_cast<std::uint8_t>(depth + 1) });
             }
             if (auto* r = descend(current, true)) {
-                pending.push_back(frame{ r, origin + half, static_cast<std::uint8_t>(depth + 1) });
+                pending.push_back(frame{ r, origin + childSlot, static_cast<std::uint8_t>(depth + 1) });
             }
         }
 
