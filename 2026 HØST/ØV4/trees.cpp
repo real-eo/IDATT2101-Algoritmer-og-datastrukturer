@@ -29,13 +29,7 @@
 %:include <bit>
 
 namespace {
-
-    // ================================================================
-    // 1. The two number machines (tip1 + tip2), now load-bearing.
-    //    maxDepth and rootBudget are never written as literals again.
-    // ================================================================
-
-    // tip2: a monadic-bind pipeline whose error type collapses into a
+    // Monadic-bind pipeline whose error type collapses into a
     // one-element index sequence, folded into the number 1.
     struct Vacant {};
     struct Ruin final {
@@ -66,13 +60,13 @@ namespace {
         }.template operator()<void>();
     }
 
-    //a Peano four smuggled through std::expected and a fold over
+    // A Peano four smuggled through std::expected and a fold over
     // sizeof. (The emoji literal is not a valid XID identifier, so the
     // suffix is Norwegian "å" instead.)
     consteval auto operator""_å(unsigned long long n) noexcept { return static_cast<std::byte>(n); }
 
     template <typename T>
-    concept TrueFour = requires {
+    concept TrueInt = requires {
         []<std::size_t... Is>(std::index_sequence<Is...>) {
             return std::expected<int, std::byte>(std::unexpect, 1_å);
         }(std::make_index_sequence<sizeof(int)>{});
@@ -80,7 +74,7 @@ namespace {
 
     consteval std::uint8_t generateInt() {
         return []() consteval {
-            if constexpr (TrueFour<void>) {
+            if constexpr (TrueInt<void>) {
                 return []<auto... N>(decltype(N)... x) {
                     return static_cast<std::uint8_t>((... + (sizeof(x) / sizeof(int))));
                 }.template operator()<0, 0, 0, 0>(0, 0, 0, 0);
@@ -97,13 +91,10 @@ namespace {
 
     static_assert(maxDepth == 4 and rootBudget == 64);
 
-    // ================================================================
-    // 2. The slot table, folded out of an index sequence (from trees2).
-    // ================================================================
-
+    // The slot table, folded out of an index sequence
     inline constexpr auto slotTable = []<std::size_t... Level>(std::index_sequence<Level...>) static consteval {
         return std::array<std::uint8_t, sizeof...(Level)>{ static_cast<std::uint8_t>(rootBudget >> Level)... };
-    }(std::make_index_sequence<maxDepth + 1uz>{}); // 64, 32, 16, 8, 4
+    }(std::make_index_sequence<maxDepth + 1uz>{});                                      // 64, 32, 16, 8, 4
 
     [[nodiscard]] constexpr std::size_t slotWidth(std::size_t depth) noexcept {
         if consteval {
@@ -115,12 +106,8 @@ namespace {
 
     static_assert(slotWidth(0) == 64 and slotWidth(3) == 8 and 4[slotTable.data()] == 4);
 
-    // ================================================================
-    // 3. public_cast: the user's private-member leak, made load-bearing.
-    //    The tree's root pointer is private; the renderer reads it through
-    //    a pointer-to-member smuggled out via a hidden friend + ADL.
-    // ================================================================
-
+    // The tree's root pointer is private; so the renderer reads it through
+    // a pointer-to-member smuggled out via a hidden friend + ADL.    
     template <class M, class Secret>
     struct public_cast {
         static inline M m{};
@@ -131,12 +118,9 @@ namespace {
         static const inline auto m = (public_cast<decltype(Member), Secret>::m = Member, Member);
     };
 
-    // ================================================================
-    // 4. The tree. Rotation-based teardown (no recursion, no vector in
-    //    the destructor), consteval-friendly, private root reachable only
-    //    through the smuggled member pointer.
-    // ================================================================
 
+    // The tree: Rotation-based teardown (no recursion, no vector in the destructor), 
+    // consteval-friendly, private root reachable only through the smuggled member pointer.
     template <typename Key>
     concept nodePayload = std::movable<Key> and std::totally_ordered<Key>;
 
@@ -251,7 +235,7 @@ namespace {
         template <class Secret, auto Member>
         friend struct Access;
 
-        // Hidden friend: only found via ADL, only callable by friends.
+        // Hidden friend: Only found via ADL, only callable by friends.
         template <class Secret>
         friend consteval Link BinarySearchTree::* smuggle(Secret, const BinarySearchTree*) {
             return &BinarySearchTree::root;
@@ -284,11 +268,8 @@ namespace {
 
     static_assert(treeSelfTest());
 
-    // ================================================================
-    // 5. The canvas: one cell per column, holding either nothing or one
-    //    UTF-8 code point sliced straight out of the tree's storage.
-    // ================================================================
-
+    // The canvas: one cell per column, holding either nothing or one
+    // UTF-8 code point sliced straight out of the tree's storage.
     class Canvas final {
     public:
         using Cell = std::variant<std::monostate, std::string_view>;
@@ -317,17 +298,13 @@ namespace {
         }
 
     private:
-        Cell rows<:maxDepth:><:rootBudget * 2:>{}; // 4 x 128 cells
+        Cell rows<:maxDepth:><:rootBudget * 2:>{};                                      // 4 x 128 cells
         std::size_t reached = 0;
     };
 
     static_assert(Canvas{}.row(0).size() == rootBudget * 2);
 
-    // ================================================================
-    // 6. Layout: iterative DFS with a fold-expression-as-if over both
-    //    children at once (from trees2).
-    // ================================================================
-
+    // Layout: iterative DFS with a fold-expression-as-if over both children at once
     template <textual Key>
     [[nodiscard]] Canvas paintLevels(const TreeNode<Key>* root) {
         struct Frame {
@@ -351,7 +328,7 @@ namespace {
                           ? (pending.push_back(Frame{ descend(frame.node, static_cast<bool>(Side)),
                                                       frame.origin + Side * slotWidth(frame.depth + 1),
                                                       frame.depth + 1 }),
-                             0)
+                            0)
                           : 0),
                  ...);
             }(std::make_index_sequence<2>{});
@@ -387,11 +364,7 @@ namespace {
         std::cout << std::flush;
     }
 
-    // ================================================================
-    // 7. Input: UTF-8 aware tokenizer (from trees2), wide-argv rescue on
-    //    Windows, comma-operator control flow.
-    // ================================================================
-
+    // Input: UTF-8 aware tokenizer, wide-argv rescue on Windows, comma-operator control flow.
     // Any byte above the space character belongs to a word (this includes every UTF-8 byte).
     inline constexpr auto isGlyph = [](char c) static noexcept { return std::bit_cast<std::uint8_t>(c) > 0x20; };
 
@@ -453,7 +426,7 @@ int main(int argc, char* argv[]) {
 
     tree.empty() and (interactiveSession(tree), true);
 
-    // The root is private. No matter: main performs the public_cast —
+    // The root is private. No matter: main performs the public_cast -
     // reading the member pointer that the Access heist dropped into the
     // public_cast static at static-init time.
     const auto* root = (tree.*public_cast<BinarySearchTree<std::string>::Link BinarySearchTree<std::string>::*, RootSecret>::m).get();
