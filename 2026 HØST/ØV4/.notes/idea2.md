@@ -4,6 +4,8 @@
 #include <utility>
 #include <concepts>
 
+// THIS PROGRAM SHOWS A WAY OF IMPLEMENTING THE NUMBER 1 SUPER OBNOXIOUSLY
+
 // A structure that physically cannot exist in a valid expected value state
 struct Empty {};
 struct Ruin { 
@@ -13,7 +15,7 @@ struct Ruin {
 
 // C++23 Monadic Bind Abuse disguised as an identity function
 template<typename T>
-struct MonadMadness {
+struct MonadBind {
     static consteval auto compute() {
         return std::expected<Empty, Ruin>(std::unexpect, Ruin{})
             .and_then([](Empty) { return std::expected<int, Ruin>(42); })
@@ -25,7 +27,7 @@ struct MonadMadness {
 // The Peak of Obnoxiousness: Explicitly invoking a lambda's template operator
 // to evaluate a conditional type-trait that collapses into an array bound.
 template<typename M>
-consteval auto absolute_zero_or_one() {
+consteval auto absoluteZeroOrOne() {
     return []<typename T>() {
         if constexpr (std::same_as<typename decltype(M::compute())::error_type, Empty>) {
             // Evaluates to a pointer to an array of size 1, converted to a boolean, 
@@ -42,9 +44,9 @@ consteval auto absolute_zero_or_one() {
 
 int main() {
     // 1 represented as a compile-time constant evaluated via standard-compliant madness
-    constexpr int the_loneliest_number = absolute_zero_or_one<MonadMadness<void>>();
+    constexpr int number = absoluteZeroOrOne<MonadBind<void>>();
     
-    std::cout << the_loneliest_number << std::endl;
+    std::cout << number << std::endl;
     return 0;
 }
 ```

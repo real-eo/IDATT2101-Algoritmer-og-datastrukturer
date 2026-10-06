@@ -4,6 +4,9 @@
 #include <concepts>
 #include <type_traits>
 
+// THIS PROGRAM USES 4 ONL AS AN EXAMPLE
+
+
 // Obnoxious custom literal to hide a '1' in bytes
 constexpr auto operator""_🙃(unsigned long long n) {
     return static_cast<std::byte>(n);
@@ -18,9 +21,9 @@ concept TrueFour = requires {
 };
 
 int main() {
-    // The "4" is derived from the size of an expected object containing a void 
+    // The int is derived from the size of an expected object containing a void 
     // error state, combined with a conditional fold expression over an empty lambda.
-    auto obnoxious_four = []() constexpr {
+    auto obnoxiousInt = []() constexpr {
         if constexpr (TrueFour<void>) {
             return []<auto... N>(decltype(N)... x) { 
                 return (... + (sizeof(x) / sizeof(char))); 
@@ -30,7 +33,7 @@ int main() {
         }
     }();
 
-    std::cout << obnoxious_four << std::endl;
+    std::cout << obnoxiousInt << std::endl;
     return 0;
 }
 ```
