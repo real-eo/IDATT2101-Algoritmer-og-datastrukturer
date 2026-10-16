@@ -6,7 +6,6 @@
 #include "flownetworks.h"
 
 namespace {
-
     constexpr auto result1 = FlowNetworks::solve<FlowNetworks::NETWORK_1, 0, 7>();
     constexpr auto result2 = FlowNetworks::solve<FlowNetworks::NETWORK_2, 0, 1>();
     constexpr auto result3 = FlowNetworks::solve<FlowNetworks::NETWORK_3, 0, 1>();
