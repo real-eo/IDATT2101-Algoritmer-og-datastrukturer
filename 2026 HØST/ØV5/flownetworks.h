@@ -115,7 +115,7 @@ namespace FlowNetworks {
                         
             // ! Parallel edges overwrite, not sum: net.capacity.at(U).at(V) = C 
             // ? If a data file ever lists two edges between the same pair, the 
-            // ? second replaces the first. Fine if the files don't do that.
+            // ? second replaces the first. Fine since the files don't do that.
             net.capacity.at(U).at(V) = C;
         }
         
