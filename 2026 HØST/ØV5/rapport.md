@@ -21,8 +21,7 @@ The BFS choice also gives a complexity guarantee: each edge becomes critical at 
 | flytgraf4  | 0      | 7    | 8                | **11** (matches assignment) |
 | flytgraf5  | 0      | 7    | 5                | **90** |
 
-Full program output (increase : augmenting path):
-
+Full program output (`increase : augmenting path`):
 ```text
 Maksimum flyt fra 0 til 7 med Edmonds-Karp (flytgraf1)
 2 : 0 4 3 7
@@ -71,7 +70,7 @@ Maksimal flyt ble 90
 
 ## flytgraf3 - maximum flow 42
 
-Four augmenting paths suffice, and the run is a clean demonstration of **back-edge exploitation**. The graph has no edge $9 \to 8$ in the file - only $8 \to 9$ with capacity 10. Yet the second path is $0\ 2\ 3\ 9\ 8\ 14\ 15\ 1$, traversing $9 \to 8$. That is only possible because the first path pushed 10 units through $8 \to 9$, creating 10 units of residual capacity in the reverse direction. The algorithm is literally rerouting flow that it placed one step earlier - something a plain DFS on the original graph could never do.
+Four augmenting paths suffice, and the run is a clean demonstration of back-edge exploitation. The graph has no edge $9 \to 8$ in the file - only $8 \to 9$ with capacity 10. Yet the second path is $0\ 2\ 3\ 9\ 8\ 14\ 15\ 1$, traversing $9 \to 8$. That is only possible because the first path pushed 10 units through $8 \to 9$, creating 10 units of residual capacity in the reverse direction. The algorithm is literally rerouting flow that it placed one step earlier - something a plain DFS on the original graph could never do.
 
 Correctness is confirmed by exhibiting a cut of the same value. Take $S = \{0, 2, 3, 4, 5, 6, 7\}$ (everything reachable from the source on the "upper" branch) against $T = \{8, 9, 10, 11, 12, 13, 14, 15, 1\}$. The crossing edges are:
 
@@ -81,7 +80,7 @@ Since any flow is bounded by any cut, no flow greater than 42 can exist - and th
 
 ## flytgraf5 - maximum flow 90
 
-This graph (used on a previous exam) has a notable structural feature: node 1 is *not* the sink but sits on the path to it, and the edge $1 \to 7$ with capacity 50 carries the single largest contribution to the flow. The largest single augmentation (40 units along $0\ 5\ 6\ 1\ 7$) uses it.
+This graph has a notable structural feature: node 1 is *not* the sink but sits on the path to it, and the edge $1 \to 7$ with capacity 50 carries the single largest contribution to the flow. The largest single augmentation (40 units along $0\ 5\ 6\ 1\ 7$) uses it.
 
 The minimum cut here is small and elegant: $S = \{0, 2, 4, 3\}$ against $T = \{5, 6, 1, 7\}$, with crossing edges
 
