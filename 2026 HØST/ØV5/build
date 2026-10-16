@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# * @REM Oppgave
+# @REM oppgave.cpp:
+if g++ -std=c++26 -O2 -Wall -Wextra -pedantic "oppgave.cpp" -o oppgave; then
+    echo "Success: oppgave compiled."
+else 
+    echo "Error: Compilation failed for oppgave."
+fi
