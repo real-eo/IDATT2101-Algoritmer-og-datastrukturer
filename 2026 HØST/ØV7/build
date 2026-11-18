@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+#   Author: Elias Alexander Wiklund Ottersbo
+# Standard: C++26
+#    Build: UCRT GCC (Windows) / GCC (Linux), GCC 15+
+#
+# Bygger ruting (søkene) og plot (SVG-tegneren).
+
+set -u
+
+profiling=false
+
+case "${1:-}" in
+    --profiling|--profile|-p)
+        profiling=true
+        ;;
+    "")
+        ;;
+    *)
+        echo "Usage: $0 [--profiling|--profile|-p]"
+        exit 1
+        ;;
+esac
+
+# -O3 -march=native er verdt ca. 20 % her. Programmet er ren heltallsaritmetikk,
+# så det er ingen flyttalls-reassosiering å bekymre seg for: utdata er bit-identisk.
+# Fjern -march=native hvis binæren skal kjøre på en annen maskin enn den ble bygget på.
+if $profiling; then
+    CXXFLAGS=(-std=c++26 -O3 -march=native -g -Wall -Wextra -pedantic)
+    PROGRAM_SUFFIX=-profiling
+else
+    CXXFLAGS=(-std=c++26 -O3 -march=native -Wall -Wextra -pedantic)
+    PROGRAM_SUFFIX=
+fi
+
+SOURCES=(
+    src/main.cpp
+    src/graph.cpp
+    src/landmarks.cpp
+    src/places.cpp
+    src/search.cpp
+)
+
+# * @REM Ruting
+# @REM Søkene: Dijkstra og ALT på kartdata.
+if g++ "${CXXFLAGS[@]}" "${SOURCES[@]}" -o ruting${PROGRAM_SUFFIX}; then
+    echo "Success: ruting${PROGRAM_SUFFIX} compiled."
+else
+    echo "Error: Compilation failed for ruting${PROGRAM_SUFFIX}."
+    exit 1
+fi
+
+# * @REM Plot
+# @REM Tegner reiseruter og interessepunkter som SVG.
+if g++ "${CXXFLAGS[@]}" src/plot.cpp -o plot${PROGRAM_SUFFIX}; then
+    echo "Success: plot${PROGRAM_SUFFIX} compiled."
+else
+    echo "Error: Compilation failed for plot${PROGRAM_SUFFIX}."
+    exit 1
+fi

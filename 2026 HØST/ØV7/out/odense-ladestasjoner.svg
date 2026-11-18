@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1400" viewBox="0 0 1400 1400">
+  <rect width="100%" height="100%" fill="#101418"/>
+  <text x="40" y="28" fill="#e8eef5" font-family="sans-serif" font-size="20">4 ladestasjoner nær Odense</text>
+  <circle cx="131.03" cy="515.33" r="7" fill="#f5c542"/>  <text x="142.03" y="520.33" fill="#e8eef5" font-family="sans-serif" font-size="14">Clever Føtex Bolbro</text>
+  <circle cx="1250.47" cy="831.15" r="7" fill="#f5c542"/>  <text x="1261.47" y="836.15" fill="#e8eef5" font-family="sans-serif" font-size="14">Tesla</text>
+  <circle cx="1186.16" cy="710.34" r="7" fill="#f5c542"/>  <text x="985.16" y="715.34" fill="#e8eef5" font-family="sans-serif" font-size="14">Tesla Supercharger Odense</text>
+  <circle cx="1268.97" cy="914.67" r="7" fill="#f5c542"/>  <text x="1279.97" y="919.67" fill="#e8eef5" font-family="sans-serif" font-size="14">Clever</text>
+</svg>

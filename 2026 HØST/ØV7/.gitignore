@@ -1,0 +1,24 @@
+# Environment
+.vscode
+
+# Development
+dev.md
+
+# Build
+*.exe
+
+# Logs
+*.log
+
+# Profiling
+first-implementation
+*.etl*
+*.json.gz
+result.*
+
+# Kartdata - skal ikke leveres inn
+data/
+
+# Genererte resultater. SVG-ene er med fordi rapporten viser dem.
+out/*
+!out/*.svg

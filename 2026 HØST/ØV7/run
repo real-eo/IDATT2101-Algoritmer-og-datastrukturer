@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+#
+#   Author: Elias Alexander Wiklund Ottersbo
+# Standard: C++26
+#    Build: UCRT GCC (Windows) / GCC (Linux), GCC 15+
+#
+# Kjører alle søkene oppgaven krever og skriver resultatene til out/.
+# Forutsetter at ./build er kjørt og at kartdataene ligger i data/norden.
+
+set -u
+
+DATA=data/norden
+OUT=out
+mkdir -p "$OUT"
+
+# * @REM De 12 referanseturene fra oppgaveteksten
+# @REM "Tur Fra Til Noder Tid (bil)" - vi sjekker kjøretid og antall noder i ruta.
+ROUTES=(
+    "kaarvag-gjemnes:2800567:7705656"
+    "gjemnes-kaarvag:7705656:2800567"
+    "malmoe-noerrebro:647826:136530"
+    "noerrebro-malmoe:136530:647826"
+    "trondheim-oslo:7826348:2948202"
+    "oslo-trondheim:2948202:7826348"
+    "jyvaeskylae-karaasjohka:339910:1853145"
+    "karaasjohka-jyvaeskylae:1853145:339910"
+    "gol-lakselv:2503331:2866570"
+    "lakselv-gol:2866570:2503331"
+    "esso-sauda-tervo:6441311:3168086"
+    "tervo-esso-sauda:3168086:6441311"
+)
+
+for entry in "${ROUTES[@]}"; do
+    IFS=: read -r name from to <<< "$entry"
+    echo "=== $name ($from -> $to) ==="
+    ./ruting.exe --data "$DATA" --from "$from" --to "$to" --quiet
+    echo
+done
+
+# * @REM Kort tur i Trondheim, med reiserute til fil
+# @REM Gløshaugen -> Otilienborg. Liten nok til at hele ruta kan skrives ut.
+echo "=== gloshaugen-otilienborg ==="
+./ruting.exe --data "$DATA" --from 2001238 --to 1987066 --route "$OUT/gloshaugen-otilienborg.csv"
+./plot.exe "$OUT/gloshaugen-otilienborg.csv" "$OUT/gloshaugen-otilienborg.svg" \
+    --title "Gløshaugen - Otilienborg"
+
+# * @REM Lang tur, med grafisk framstilling
+# @REM Gløshaugen -> Odense. Viser at ALT prosesserer langt færre noder.
+echo "=== gloshaugen-odense ==="
+./ruting.exe --data "$DATA" --from 2001238 --to 2763740 --route "$OUT/gloshaugen-odense.csv"
+./plot.exe "$OUT/gloshaugen-odense.csv" "$OUT/gloshaugen-odense.svg" \
+    --title "Gløshaugen - Odense"
+
+# * @REM Interessepunkter
+# @REM Fire ladestasjoner nær Odense og fire spisesteder nær Gløshaugen.
+echo "=== ladestasjoner near odense ==="
+./ruting.exe --data "$DATA" --near 2763740 --category ladestasjon --count 4 \
+    --near-route "$OUT/odense-ladestasjoner.csv"
+./plot.exe "$OUT/odense-ladestasjoner.csv" "$OUT/odense-ladestasjoner.svg" \
+    --markers --title "4 ladestasjoner nær Odense"
+
+echo "=== spisesteder near gloshaugen ==="
+./ruting.exe --data "$DATA" --near 2001238 --category spisested --count 4 \
+    --near-route "$OUT/gloshaugen-spisesteder.csv"
+./plot.exe "$OUT/gloshaugen-spisesteder.csv" "$OUT/gloshaugen-spisesteder.svg" \
+    --markers --title "4 spisesteder nær Gløshaugen"
+
+echo "Ferdig. Resultatene ligger i $OUT/."

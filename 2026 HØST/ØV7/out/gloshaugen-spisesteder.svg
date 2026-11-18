@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1400" viewBox="0 0 1400 1400">
+  <rect width="100%" height="100%" fill="#101418"/>
+  <text x="40" y="28" fill="#e8eef5" font-family="sans-serif" font-size="20">4 spisesteder nær Gløshaugen</text>
+  <circle cx="222.28" cy="158.97" r="7" fill="#f5c542"/>  <text x="233.28" y="163.97" fill="#e8eef5" font-family="sans-serif" font-size="14">SiT Kafe Kjelhuset</text>
+  <circle cx="753.71" cy="731.53" r="7" fill="#f5c542"/>  <text x="764.71" y="736.53" fill="#e8eef5" font-family="sans-serif" font-size="14">Kantine Materialteknologi 2</text>
+  <circle cx="1177.72" cy="1271.03" r="7" fill="#f5c542"/>  <text x="1188.72" y="1276.03" fill="#e8eef5" font-family="sans-serif" font-size="14">Kromaten kantine</text>
+  <circle cx="452.23" cy="1200.44" r="7" fill="#f5c542"/>  <text x="463.23" y="1205.44" fill="#e8eef5" font-family="sans-serif" font-size="14">Cafe-sito Stripa</text>
+</svg>
