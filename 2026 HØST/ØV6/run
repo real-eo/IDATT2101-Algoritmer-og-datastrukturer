@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -e
+shopt -s nullglob
+
+testFiles=(
+    "opg6-kompr.lyx"
+    "Twenty_thousand_leagues_under_the_sea.txt"
+    "diverse.lyx"
+    "diverse.txt"
+    "enwik8"
+)
+
+# * @REM Remove existing .kmp files and copies of test files
+rm -f -- *.kmp
+
+for file in "${testFiles[@]}"; do
+    if [[ "$file" == *.* ]]; then
+        base="${file%.*}"
+        extension=".${file##*.}"
+        copies=( "$base ("*")$extension" )
+    else
+        copies=( "$file ("*")" )
+    fi
+
+    rm -f -- "${copies[@]}"
+done
+
+for file in "${testFiles[@]}"; do
+    ./compress.exe "$file"
+done
+
+for file in "${testFiles[@]}"; do
+    ./decompress.exe "$file.kmp"
+done

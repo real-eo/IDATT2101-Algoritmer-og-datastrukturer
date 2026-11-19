@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+profiling=false
+
+case "${1:-}" in
+    --profiling|--profile|-p)
+        profiling=true
+        ;;
+    "")
+        ;;
+    *)
+        echo "Usage: $0 [--profiling|--profile|-p]"
+        exit 1
+        ;;
+esac
+
+
+# -O3 -march=native is worth ~20% here and produces bit-identical output:
+# the model is pure integer arithmetic, so there is no floating-point
+# reassociation to worry about. Drop -march=native if the binary has to run
+# on a different machine than it was built on.
+if $profiling; then
+    CXXFLAGS=(-std=c++23 -O3 -march=native -g -Wall -Wextra -pedantic)
+    PROGRAM_SUFFIX=-profiling
+else
+    CXXFLAGS=(-std=c++23 -O3 -march=native -Wall -Wextra -pedantic)
+    PROGRAM_SUFFIX=
+fi
+
+
+# * @REM Compress
+# @REM compress.cpp:
+if g++ "${CXXFLAGS[@]}" "compress.cpp" -o compress${PROGRAM_SUFFIX}; then
+    echo "Success: compress${PROGRAM_SUFFIX} compiled."
+else 
+    echo "Error: Compilation failed for compress${PROGRAM_SUFFIX}."
+fi
+
+
+# * @REM Decompress
+# @REM decompress.cpp:
+if g++ "${CXXFLAGS[@]}" "decompress.cpp" -o decompress${PROGRAM_SUFFIX}; then
+    echo "Success: decompress${PROGRAM_SUFFIX} compiled."
+else 
+    echo "Error: Compilation failed for decompress${PROGRAM_SUFFIX}."
+fi

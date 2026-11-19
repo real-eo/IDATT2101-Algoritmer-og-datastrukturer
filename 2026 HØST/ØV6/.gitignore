@@ -1,0 +1,29 @@
+# Environment
+.vscode
+
+# Development
+dev.md
+
+# Build
+*.exe
+
+# Logs
+*.log
+
+# Profiling
+first-implementation
+*.etl*
+*.json.gz
+result.*
+
+# Output
+*.kmp
+*.txt
+*.lyx
+
+# Test files
+!diverse.lyx
+!diverse.txt
+!enwik8
+!oppg6-kompr.lyx
+!Twenty_thousand_leagues_under_the_sea.txt
